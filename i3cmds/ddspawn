@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Toggle floating dropdown terminal in i3, or start if non-existing.
+# $1 is	the script run in the terminal.
+# All other args are terminal settings.
+# Terminal names are in dropdown_* to allow easily setting i3 settings.
+
+st -n dropdown_tmuxdd -e tmux
+i3 "for_window [instance=\"dropdown_*\"] floating enable"
+i3 "for_window [instance=\"dropdown_*\"] move scratchpad"
+i3 "for_window [instance=\"dropdown_*\"] sticky enable"
+i3 "for_window [instance=\"dropdown_*\"] scratchpad show"
+i3 "for_window [instance=\"dropdown_tmuxdd\"] resize set 1900 1030"
+i3 "for_window [instance=\"dropdown_tmuxdd\"] border pixel 3"
+i3 "for_window [instance=\"dropdown_*\"] move position center"
+
+

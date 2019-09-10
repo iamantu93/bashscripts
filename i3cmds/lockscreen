@@ -1,0 +1,6 @@
+#!/bin/sh
+maim $HOME/.config/locksc.png
+convert $HOME/.config/locksc.png -filter Gaussian -thumbnail 20% -sample 500% -swirl 98 /tmp/locksc3.png
+rm $HOME/.config/locksc.png
+convert /tmp/locksc3.png $HOME/.config/lock.jpg -gravity center -composite /tmp/locksc3.png
+i3lock -i /tmp/locksc3.png

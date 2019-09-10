@@ -1,0 +1,109 @@
+#!/bin/sh
+# Arch post install script.
+# Run this script after entering chroot environment.
+echo "Generating locale"
+sed -i 's/#en_US/en_US/g' /etc/locale.gen
+locale-gen
+clear
+
+echo "Setting up timezone"
+ln -sf /usr/share/zoneinfo/Asia/Dhaka /etc/localtime
+hwclock --systohc --utc
+
+echo "Setting up hostname"
+echo "arch" > /etc/hostname
+
+echo "Installing grub bootloader"
+pacman -S --noconfirm grub > /dev/null
+grub-install /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg
+clear
+
+ins(){
+	for i in $@
+	do
+		echo "Installing $i"
+		pacman -S --noconfirm $i > /dev/null 2>&1
+		clear
+	done
+}
+
+servinit(){
+	for i in $@
+	do
+		echo "Enabling $i service"
+		systemctl enable $i >/dev/null 2>&1
+		clear
+	done
+}
+
+gitins(){
+	for i in $@
+	do
+		echo " Installing $i"
+		cd /tmp
+		git clone "https://github.com/iamantu93/$i.git" >/dev/null 2>&1
+		cd $i
+		make > /dev/null 2>&1
+		make install > /dev/null 2>&1
+		cd /tmp
+		clear
+	done
+}
+echo "Installing necessary programs."
+ins xorg-server xorg-xinit libnotify dunst pulseaudio pulseaudio-alsa urlscan networkmanager cronie dosfstools ntfs-3g exfat-utils unrar unzip ffmpeg git lolcat udiskie flashplugin
+
+echo "Installing window manager"
+ins i3-gaps i3blocks i3lock xwallpaper compton xorg-xbacklight xf86-video-intel xf86-video-amdgpu xdotool xorg-xprop
+
+echo "Installing font packages."
+ins ttf-inconsolata ttf-linux-libertine noto-fonts noto-fonts-emoji
+
+echo "Installing some commandline programs"
+ins isync fish vifm neovim python-neovim neomutt newsboat imagemagick tree mediainfo poppler cmus calcurse tmux atool fzf highlight pulsemixer w3m xclip maim youtube-dl htop neofetch
+ins transmission-remote
+
+echo "Installing some graphical programs"
+ins sxiv mpv zathura zathura-pdf-mupdf firefox
+
+echo "Installing programs from git repo"
+gitins st dmenu
+
+echo "Installing yay.An aur helper."
+pacman -S --noconfirm go >/dev/null
+cd /tmp
+git clone https://github.com/Jguer/yay.git > /dev/null
+cd yay
+make > /dev/null 2>&1
+make install > /dev/null 2>&1
+clear
+
+echo "Enabling sevices"
+servinit NetworkManager cronie
+
+echo "Adding user antu to the system"
+useradd -G wheel -s /bin/bash antu
+
+if [ -d /home/antu ]; then
+	
+	chown -R antu:wheel /home/antu
+else
+	mkdir /home/antu
+	chown -R antu:wheel /home/antu
+fi
+clear
+
+echo "Making pacman & yay more colorful"
+grep "^Color" /etc/pacman.conf >/dev/null || sed -i "s/^#Color/Color/" /etc/pacman.conf
+grep "ILoveCandy" /etc/pacman.conf >/dev/null || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
+sed -i "s/^#VerbosePkgLists/VerbosePkgLists/" /etc/pacman.conf
+
+echo "Enabling Use all cores for compilation."
+sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
+
+echo "Changing root password. Type password twice. If you see any error type passwd to change password."
+echo "It is mandatory to set root password."
+passwd
+
+echo "Changing password for user antu. type password twice. If you see error type passwd antu to change password."
+passwd antu

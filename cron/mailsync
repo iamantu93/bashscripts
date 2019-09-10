@@ -1,0 +1,7 @@
+#!/bin/sh
+echo " 🔃" > /tmp/imapsyncicon_$USER
+pkill -RTMIN+12 i3blocks
+mbsync -a>/dev/null
+notmuch new>/dev/null 2>/dev/null
+rm /tmp/imapsyncicon_$USER
+pkill -RTMIN+12 i3blocks

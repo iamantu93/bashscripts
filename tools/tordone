@@ -1,0 +1,4 @@
+#!/bin/sh
+# $TR_TORRENT_NAME
+
+notify-send "👌 Transmission Daemon" "$TR_TORRENT_NAME finished downloading"

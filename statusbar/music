@@ -1,0 +1,8 @@
+#!/bin/sh
+# Scripts to show currently playing songs in cmus
+
+if [ !$(pgrep -x cmus) -e 0  ]; then
+	echo -n ""
+else
+	echo -n "🎼" "$(cmus-remote -Q | grep status | awk '{print $2}' |sed 's/playing/▶️/;s/paused/⏸️/')""$(cmus-remote -Q |grep title |awk '{$1=$2=""; print $0 }')"
+fi
