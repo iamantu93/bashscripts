@@ -1,0 +1,10 @@
+#!/bin/sh
+# Elementary os after install script
+
+apt install software-properties-common
+add-apt-repository ppa:yunnxx/elementary
+apt install indicator-application wingpanel-indicator-ayatana
+sed -i -e 's/OnlyShowIn=Unity;GNOME;/OnlyShowIn=Unity;GNOME;Pantheon;/g' /etc/xdg/autostart/indicator-application.desktop
+add-apt-repository ppa:philip.scott/elementary-tweaks
+apt install elementary-tweaks
+

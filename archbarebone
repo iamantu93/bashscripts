@@ -1,6 +1,11 @@
 #!/bin/sh
 # Arch post install script.
 # Run this script after entering chroot environment.
+
+pacman -S grub
+grub-install /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg
+
 echo "Generating locale"
 sed -i 's/#en_US/en_US/g' /etc/locale.gen
 locale-gen
